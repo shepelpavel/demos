@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  apache:
+    image: httpd:alpine
+    container_name: httpd
+    restart: always
+    environment:
+      - TZ=Europe/Moscow
+    ports:
+      - '8880:80'
+    volumes:
+      - ./docs:/usr/local/apache2/htdocs
