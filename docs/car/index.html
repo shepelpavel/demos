@@ -81,10 +81,12 @@
 
         const model_doorl = await gltfloader.loadAsync('./models/doorl.glb')
         model_doorl.scene.rotation.set(0, Math.PI, 0)
+        model_doorl.scene.position.set(0.77, 0, 0.725)
         scene.add(model_doorl.scene)
 
         const model_doorr = await gltfloader.loadAsync('./models/doorr.glb')
         model_doorr.scene.rotation.set(0, Math.PI, 0)
+        model_doorr.scene.position.set(-0.77, 0, 0.725)
         scene.add(model_doorr.scene)
 
         const model_wheel_fl = await gltfloader.loadAsync('./models/wheel.glb')
@@ -105,6 +107,7 @@
         model_wheel_br.scene.position.set(-0.75, -0.16, -1.27)
         scene.add(model_wheel_br.scene)
 
+        // animate
         function animate() {
           requestAnimationFrame(animate)
           model_wheel_fl.scene.rotation.set(
@@ -127,6 +130,20 @@
             model_wheel_br.scene.rotation.y,
             model_wheel_br.scene.rotation.z,
           )
+          if (model_doorl.scene.rotation.y > 2.5) {
+            model_doorl.scene.rotation.set(
+              model_doorl.scene.rotation.x,
+              model_doorl.scene.rotation.y - 0.02,
+              model_doorl.scene.rotation.z,
+            )
+          }
+          if (model_doorr.scene.rotation.y < 3.78) {
+            model_doorr.scene.rotation.set(
+              model_doorr.scene.rotation.x,
+              model_doorr.scene.rotation.y + 0.02,
+              model_doorr.scene.rotation.z,
+            )
+          }
           render()
         }
         animate()
