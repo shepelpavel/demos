@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Ring tree.js</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+    <link type="text/css" rel="stylesheet" href="main.css" />
+  </head>
+  <body>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./three.module.min.js",
+          "three/addons/": "./"
+        }
+      }
+    </script>
+    <script type="module">
+      import * as THREE from './three.module.min.js'
+      import { OrbitControls } from './controls/OrbitControls.js'
+      import { GLTFLoader } from './loaders/GLTFLoader.js'
+      import { RGBELoader } from './loaders/RGBELoader.js'
+      let renderer, scene, camera
+      const gltfloader = new GLTFLoader()
+      const textureLoader = new RGBELoader().setPath('textures/')
+      init().then(render)
+
+      async function init() {
+        renderer = new THREE.WebGLRenderer({ antialias: true })
+        renderer.setPixelRatio(window.devicePixelRatio)
+        renderer.setSize(window.innerWidth, window.innerHeight)
+        renderer.shadowMap.enabled = true
+        renderer.shadowMap.type = THREE.PCFShadowMap
+        document.body.appendChild(renderer.domElement)
+        scene = new THREE.Scene()
+
+        // camera
+        camera = new THREE.PerspectiveCamera(
+          10,
+          window.innerWidth / window.innerHeight,
+          1,
+          500,
+        )
+        camera.position.set(20, 15, 20)
+
+        // controls
+        const controls = new OrbitControls(camera, renderer.domElement)
+        controls.addEventListener('change', render)
+        controls.minDistance = 16
+        controls.maxDistance = 50
+        controls.enablePan = false
+
+        // direction light
+        const dlPower = 10
+        const dlHeight = 80
+        const dlColor = 0xfff9e0
+        const dlBias = -0.0001
+
+        const dl1 = new THREE.DirectionalLight(dlColor, dlPower)
+        dl1.position.set(300, dlHeight, 200)
+        dl1.castShadow = true
+        const dl2 = new THREE.DirectionalLight(dlColor, dlPower)
+        dl2.position.set(-300, dlHeight, -150)
+        dl2.castShadow = true
+        scene.add(dl1)
+        scene.add(dl2)
+
+        // background
+        const bckTexture = textureLoader.load('bck.hdr')
+        bckTexture.mapping = THREE.EquirectangularReflectionMapping
+        scene.background = bckTexture
+        scene.environment = bckTexture
+
+        // Model
+        const model_body = await gltfloader.loadAsync('./models/body.glb')
+        model_body.scene.rotation.set(0, Math.PI, 0)
+        scene.add(model_body.scene)
+
+        const model_doorl = await gltfloader.loadAsync('./models/doorl.glb')
+        model_doorl.scene.rotation.set(0, Math.PI, 0)
+        scene.add(model_doorl.scene)
+
+        const model_doorr = await gltfloader.loadAsync('./models/doorr.glb')
+        model_doorr.scene.rotation.set(0, Math.PI, 0)
+        scene.add(model_doorr.scene)
+
+        const model_wheel_fl = await gltfloader.loadAsync('./models/wheel.glb')
+        model_wheel_fl.scene.position.set(0.75, -0.16, 1.15)
+        scene.add(model_wheel_fl.scene)
+
+        const model_wheel_fr = await gltfloader.loadAsync('./models/wheel.glb')
+        model_wheel_fr.scene.position.set(0.75, -0.16, -1.27)
+        scene.add(model_wheel_fr.scene)
+
+        const model_wheel_bl = await gltfloader.loadAsync('./models/wheel.glb')
+        model_wheel_bl.scene.rotation.set(0, Math.PI, 0)
+        model_wheel_bl.scene.position.set(-0.75, -0.16, 1.15)
+        scene.add(model_wheel_bl.scene)
+
+        const model_wheel_br = await gltfloader.loadAsync('./models/wheel.glb')
+        model_wheel_br.scene.rotation.set(0, Math.PI, 0)
+        model_wheel_br.scene.position.set(-0.75, -0.16, -1.27)
+        scene.add(model_wheel_br.scene)
+
+        function animate() {
+          requestAnimationFrame(animate)
+          model_wheel_fl.scene.rotation.set(
+            model_wheel_fl.scene.rotation.x + 0.1,
+            model_wheel_fl.scene.rotation.y,
+            model_wheel_fl.scene.rotation.z,
+          )
+          model_wheel_fr.scene.rotation.set(
+            model_wheel_fr.scene.rotation.x + 0.1,
+            model_wheel_fr.scene.rotation.y,
+            model_wheel_fr.scene.rotation.z,
+          )
+          model_wheel_bl.scene.rotation.set(
+            model_wheel_bl.scene.rotation.x + 0.1,
+            model_wheel_bl.scene.rotation.y,
+            model_wheel_bl.scene.rotation.z,
+          )
+          model_wheel_br.scene.rotation.set(
+            model_wheel_br.scene.rotation.x + 0.1,
+            model_wheel_br.scene.rotation.y,
+            model_wheel_br.scene.rotation.z,
+          )
+          render()
+        }
+        animate()
+
+        // resize
+        window.addEventListener('resize', onWindowResize)
+      }
+      function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight
+        camera.updateProjectionMatrix()
+        renderer.setSize(window.innerWidth, window.innerHeight)
+        render()
+      }
+      function render() {
+        renderer.render(scene, camera)
+      }
+    </script>
+  </body>
+</html>
