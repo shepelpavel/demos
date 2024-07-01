@@ -10,4 +10,4 @@ services:
     ports:
       - '8880:80'
     volumes:
-      - ./docs:/usr/local/apache2/htdocs
+      - ./public:/usr/local/apache2/htdocs
