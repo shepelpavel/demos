@@ -98,6 +98,9 @@ select {
   left: 50%;
   top: 90%;
   transform: translate(-50%, -50%);
+  z-index: 21;
+}
+#control_animation label {
   border: 1px solid #00ffff;
   color: #00ffff;
   background: black;

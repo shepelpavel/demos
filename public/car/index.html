@@ -58,7 +58,7 @@
           1,
           500,
         )
-        camera.position.set(20, 15, 20)
+        camera.position.set(20, 6, 20)
 
         // controls
         controls = new OrbitControls(camera, renderer.domElement)
@@ -66,22 +66,8 @@
         controls.maxDistance = 50
         controls.enablePan = false
         controls.enableDamping = true
+        controls.dampingFactor = 0.05
         controls.maxPolarAngle = Math.PI / 2
-
-        // direction light
-        const dlPower = 10
-        const dlHeight = 80
-        const dlColor = 0xfff9e0
-        const dlBias = -0.0001
-
-        const dl1 = new THREE.DirectionalLight(dlColor, dlPower)
-        dl1.position.set(300, dlHeight, 200)
-        dl1.castShadow = true
-        const dl2 = new THREE.DirectionalLight(dlColor, dlPower)
-        dl2.position.set(-300, dlHeight, -150)
-        dl2.castShadow = true
-        scene.add(dl1)
-        scene.add(dl2)
 
         // background
         const bckTexture = rgbeLoader.load('bck.hdr')
@@ -91,10 +77,11 @@
 
         // floor mirror
         floor.obj.mirror = new Reflector(new THREE.CircleGeometry(50, 12), {
-          color: new THREE.Color(0x000000),
+          color: new THREE.Color(0x646464),
+          resolution: 0.2,
         })
         floor.obj.mirror.rotation.set(Math.PI / -2, 0, 0)
-        floor.obj.mirror.position.set(0, -0.501, 0)
+        floor.obj.mirror.position.set(0, -0.481, 0)
         scene.add(floor.obj.mirror)
         // floor ghost
         floor.textures.ghost = textureLoader.load('floor-ghost.png')
@@ -110,7 +97,7 @@
         floorGhostMaterial.opacity = 0.3
         floor.obj.ghost = new THREE.Mesh(floorGhostGeometry, floorGhostMaterial)
         floor.obj.ghost.rotation.set(Math.PI / -2, 0, 0)
-        floor.obj.ghost.position.set(0, -0.5, 0)
+        floor.obj.ghost.position.set(0, -0.48, 0)
         scene.add(floor.obj.ghost)
 
         // Model
@@ -157,10 +144,10 @@
         render()
       }
 
-      function render(time = 0) {
-        time *= 0.001
+      function render() {
         renderer.render(scene, camera)
         requestAnimationFrame(render)
+        controls.update()
         animate()
       }
 
