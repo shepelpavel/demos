@@ -90,7 +90,7 @@
         scene.environment = bckTexture
 
         // floor mirror
-        floor.obj.mirror = new Reflector(new THREE.CircleGeometry(30, 12), {
+        floor.obj.mirror = new Reflector(new THREE.CircleGeometry(50, 12), {
           color: new THREE.Color(0x000000),
         })
         floor.obj.mirror.rotation.set(Math.PI / -2, 0, 0)
@@ -100,13 +100,14 @@
         floor.textures.ghost = textureLoader.load('floor-ghost.png')
         floor.textures.ghost.wrapS = THREE.RepeatWrapping
         floor.textures.ghost.wrapT = THREE.RepeatWrapping
-        floor.textures.ghost.repeat.x = 10
-        floor.textures.ghost.repeat.y = 10
-        const floorGhostGeometry = new THREE.CircleGeometry(30, 12)
+        floor.textures.ghost.repeat.x = 18
+        floor.textures.ghost.repeat.y = 18
+        const floorGhostGeometry = new THREE.CircleGeometry(50, 12)
         const floorGhostMaterial = new THREE.MeshBasicMaterial({
           map: floor.textures.ghost,
         })
         floorGhostMaterial.transparent = true
+        floorGhostMaterial.opacity = 0.3
         floor.obj.ghost = new THREE.Mesh(floorGhostGeometry, floorGhostMaterial)
         floor.obj.ghost.rotation.set(Math.PI / -2, 0, 0)
         floor.obj.ghost.position.set(0, -0.5, 0)
