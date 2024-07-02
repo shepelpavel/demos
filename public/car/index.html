@@ -87,8 +87,7 @@
         floor.textures.ghost = textureLoader.load('floor-ghost.png')
         floor.textures.ghost.wrapS = THREE.RepeatWrapping
         floor.textures.ghost.wrapT = THREE.RepeatWrapping
-        floor.textures.ghost.repeat.x = 18
-        floor.textures.ghost.repeat.y = 18
+        floor.textures.ghost.repeat.set(18, 18)
         const floorGhostGeometry = new THREE.CircleGeometry(50, 12)
         const floorGhostMaterial = new THREE.MeshBasicMaterial({
           map: floor.textures.ghost,
