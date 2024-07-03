@@ -39,6 +39,7 @@
       const models = {}
       const floor = {}
       floor.obj = {}
+      floor.mat = {}
       floor.textures = {}
       init().then(render)
 
@@ -58,7 +59,7 @@
           1,
           500,
         )
-        camera.position.set(20, 6, 20)
+        camera.position.set(15, 3, 20)
 
         // controls
         controls = new OrbitControls(camera, renderer.domElement)
@@ -75,20 +76,28 @@
         scene.background = bckTexture
         scene.environment = bckTexture
 
-        // floor mirror
-        floor.obj.mirror = new Reflector(new THREE.CircleGeometry(50, 12), {
-          color: new THREE.Color(0x646464),
-          resolution: 0.2,
+        // basefloor
+        floor.obj.basefloor = new THREE.CircleGeometry(200, 12)
+        floor.mat.basefloor = new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+          metalness: 0.98,
+          roughness: 0,
         })
-        floor.obj.mirror.rotation.set(Math.PI / -2, 0, 0)
-        floor.obj.mirror.position.set(0, -0.481, 0)
-        scene.add(floor.obj.mirror)
+        floor.basefloor = new THREE.Mesh(
+          floor.obj.basefloor,
+          floor.mat.basefloor,
+        )
+        floor.basefloor.receiveShadow = true
+        floor.basefloor.position.set(0, -0.478, 0)
+        floor.basefloor.rotation.set(Math.PI / -2, 0, 0)
+        scene.add(floor.basefloor)
+
         // floor ghost
         floor.textures.ghost = textureLoader.load('floor-ghost.png')
         floor.textures.ghost.wrapS = THREE.RepeatWrapping
         floor.textures.ghost.wrapT = THREE.RepeatWrapping
-        floor.textures.ghost.repeat.set(18, 18)
-        const floorGhostGeometry = new THREE.CircleGeometry(50, 12)
+        floor.textures.ghost.repeat.set(64, 64)
+        const floorGhostGeometry = new THREE.CircleGeometry(200, 12)
         const floorGhostMaterial = new THREE.MeshBasicMaterial({
           map: floor.textures.ghost,
         })
@@ -96,41 +105,120 @@
         floorGhostMaterial.opacity = 0.3
         floor.obj.ghost = new THREE.Mesh(floorGhostGeometry, floorGhostMaterial)
         floor.obj.ghost.rotation.set(Math.PI / -2, 0, 0)
-        floor.obj.ghost.position.set(0, -0.48, 0)
+        floor.obj.ghost.position.set(0, -0.477, 0)
         scene.add(floor.obj.ghost)
+
+        // point light logo
+        const pointLightLogo = new THREE.SpotLight(0xffffff, 1500)
+        pointLightLogo.position.set(-10, 2, -14)
+        pointLightLogo.target.position.set(-16, 0, -16)
+        pointLightLogo.target.updateMatrixWorld()
+        pointLightLogo.castShadow = true
+        pointLightLogo.shadow.bias = 0.005
+        pointLightLogo.angle = Math.PI * 0.2
+        pointLightLogo.penumbra = 0.5
+        scene.add(pointLightLogo)
+        /* const lightHelperLogo = new THREE.SpotLightHelper(pointLightLogo)
+         * scene.add(lightHelperLogo) */
+
+        // point light car
+        const pointLightCar = new THREE.SpotLight(0xffffff, 500)
+        pointLightCar.position.set(0, 4, 0)
+        pointLightCar.castShadow = true
+        pointLightCar.shadow.bias = 0.005
+        pointLightCar.angle = Math.PI * 0.2
+        pointLightCar.penumbra = 0.3
+        scene.add(pointLightCar)
+        /* const lightHelperCar = new THREE.SpotLightHelper(pointLightCar)
+         * scene.add(lightHelperCar) */
 
         // Model
         models.model_body = await gltfLoader.loadAsync('./models/body.glb')
         models.model_body.scene.rotation.set(0, Math.PI, 0)
+        models.model_body.scene.traverse(function (node) {
+          if (node.isMesh) {
+            node.castShadow = true
+            node.receiveShadow = true
+          }
+        })
         scene.add(models.model_body.scene)
 
         models.model_doorl = await gltfLoader.loadAsync('./models/doorl.glb')
         models.model_doorl.scene.rotation.set(0, Math.PI, 0)
         models.model_doorl.scene.position.set(0.77, 0, 0.725)
+        models.model_doorl.scene.traverse(function (node) {
+          if (node.isMesh) {
+            node.castShadow = true
+            node.receiveShadow = true
+          }
+        })
         scene.add(models.model_doorl.scene)
 
         models.model_doorr = await gltfLoader.loadAsync('./models/doorr.glb')
         models.model_doorr.scene.rotation.set(0, Math.PI, 0)
         models.model_doorr.scene.position.set(-0.77, 0, 0.725)
+        models.model_doorr.scene.traverse(function (node) {
+          if (node.isMesh) {
+            node.castShadow = true
+            node.receiveShadow = true
+          }
+        })
         scene.add(models.model_doorr.scene)
 
         models.model_wheel_fl = await gltfLoader.loadAsync('./models/wheel.glb')
         models.model_wheel_fl.scene.position.set(0.75, -0.16, 1.15)
+        models.model_wheel_fl.scene.traverse(function (node) {
+          if (node.isMesh) {
+            node.castShadow = true
+            node.receiveShadow = true
+          }
+        })
         scene.add(models.model_wheel_fl.scene)
 
         models.model_wheel_fr = await gltfLoader.loadAsync('./models/wheel.glb')
         models.model_wheel_fr.scene.position.set(0.75, -0.16, -1.27)
+        models.model_wheel_fr.scene.traverse(function (node) {
+          if (node.isMesh) {
+            node.castShadow = true
+            node.receiveShadow = true
+          }
+        })
         scene.add(models.model_wheel_fr.scene)
 
         models.model_wheel_bl = await gltfLoader.loadAsync('./models/wheel.glb')
         models.model_wheel_bl.scene.rotation.set(0, Math.PI, 0)
         models.model_wheel_bl.scene.position.set(-0.75, -0.16, 1.15)
+        models.model_wheel_bl.scene.traverse(function (node) {
+          if (node.isMesh) {
+            node.castShadow = true
+            node.receiveShadow = true
+          }
+        })
         scene.add(models.model_wheel_bl.scene)
 
         models.model_wheel_br = await gltfLoader.loadAsync('./models/wheel.glb')
         models.model_wheel_br.scene.rotation.set(0, Math.PI, 0)
         models.model_wheel_br.scene.position.set(-0.75, -0.16, -1.27)
+        models.model_wheel_br.scene.traverse(function (node) {
+          if (node.isMesh) {
+            node.castShadow = true
+            node.receiveShadow = true
+          }
+        })
         scene.add(models.model_wheel_br.scene)
+
+        // Logo
+        const logoModel = await gltfLoader.loadAsync('./models/logo.glb')
+        logoModel.scene.rotation.set(0, Math.PI / 3, 0)
+        logoModel.scene.position.set(-16, -0.481, -16)
+        logoModel.scene.scale.set(0.6, 0.6, 0.6)
+        logoModel.scene.traverse(function (node) {
+          if (node.isMesh) {
+            node.castShadow = true
+            node.receiveShadow = true
+          }
+        })
+        scene.add(logoModel.scene)
 
         // resize
         window.addEventListener('resize', onWindowResize)
@@ -145,6 +233,8 @@
 
       function render() {
         renderer.render(scene, camera)
+        renderer.shadowMap.enabled = true
+        renderer.shadowMap.type = THREE.BasicShadowMap
         requestAnimationFrame(render)
         controls.update()
         animate()
